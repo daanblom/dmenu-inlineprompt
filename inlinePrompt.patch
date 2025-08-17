@@ -1,0 +1,57 @@
+diff --git a/config.def.h b/config.def.h
+index 1edb647..efd5bf7 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -12,6 +12,7 @@ static const char *colors[SchemeLast][2] = {
+ 	[SchemeNorm] = { "#bbbbbb", "#222222" },
+ 	[SchemeSel] = { "#eeeeee", "#005577" },
+ 	[SchemeOut] = { "#000000", "#00ffff" },
++	[SchemePlaceholder] = { "#444444", "#222222" },
+ };
+ /* -l option; if nonzero, dmenu uses vertical list with given number of lines */
+ static unsigned int lines      = 0;
+diff --git a/dmenu.c b/dmenu.c
+index fd49549..c660945 100644
+--- a/dmenu.c
++++ b/dmenu.c
+@@ -25,7 +25,7 @@
+ #define TEXTW(X)              (drw_fontset_getwidth(drw, (X)) + lrpad)
+ 
+ /* enums */
+-enum { SchemeNorm, SchemeSel, SchemeOut, SchemeLast }; /* color schemes */
++enum { SchemeNorm, SchemeSel, SchemeOut, SchemePlaceholder, SchemeLast }; /* color schemes */
+ 
+ struct item {
+ 	char *text;
+@@ -152,20 +152,22 @@ drawmenu(void)
+ 	drw_setscheme(drw, scheme[SchemeNorm]);
+ 	drw_rect(drw, 0, 0, mw, mh, 1, 1);
+ 
+-	if (prompt && *prompt) {
+-		drw_setscheme(drw, scheme[SchemeSel]);
+-		x = drw_text(drw, x, 0, promptw, bh, lrpad / 2, prompt, 0);
+-	}
+-	/* draw input field */
+ 	w = (lines > 0 || !matches) ? mw - x : inputw;
+-	drw_setscheme(drw, scheme[SchemeNorm]);
+-	drw_text(drw, x, 0, w, bh, lrpad / 2, text, 0);
++	if (text[0] == '\0' && prompt && *prompt) {
++		drw_setscheme(drw, scheme[SchemePlaceholder]);
++		drw_text(drw, x, 0, w, bh, lrpad / 2, prompt, 0);
++	} else {
++		drw_setscheme(drw, scheme[SchemeNorm]);
++		drw_text(drw, x, 0, w, bh, lrpad / 2, text, 0);
++	}
+ 
++if (text[0] != '\0') {
+ 	curpos = TEXTW(text) - TEXTW(&text[cursor]);
+-	if ((curpos += lrpad / 2 - 1) < w) {
++	if ((curpos += lrpad / 1 - 1) < w) {
+ 		drw_setscheme(drw, scheme[SchemeNorm]);
+-		drw_rect(drw, x + curpos, 2, 2, bh - 4, 1, 0);
++		drw_rect(drw, x + curpos, 1, 2, bh - 4, 1, 0);
+ 	}
++}
+ 
+ 	if (lines > 0) {
+ 		/* draw vertical list */
