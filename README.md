@@ -43,7 +43,7 @@ No changes in usage. Run dmenu as usual:
 ## Notes
 
 - Based on the base build of dmenu.
-- build in header image at [https://github.com/daanblom/suckless]
+- build in header image at https://github.com/daanblom/suckless
 
 ## License
 
