@@ -2,7 +2,7 @@
 
 This patch modifies dmenu so that, instead of displaying the prompt in front of the input, the prompt is shown as placeholder text inside the input field. When no text is typed, the placeholder appears; when you start typing, your input replaces it.
 
-![dmenu with inline prompt](/img/header.png)
+![dmenu with inline prompt](/img/header.gif)
 
 ## Features
 
