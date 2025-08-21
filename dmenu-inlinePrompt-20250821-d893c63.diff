@@ -1,0 +1,75 @@
+From 531396985f3c400ed7a68810fb5f3c6402593123 Mon Sep 17 00:00:00 2001
+From: Daan Blom <contact@daanblom.com>
+Date: Thu, 21 Aug 2025 10:47:22 +0200
+Subject: [PATCH] Show prompt as placeholder inside input field instead of
+ before it
+
+---
+ config.def.h |  1 +
+ dmenu.c      | 26 +++++++++++++++-----------
+ 2 files changed, 16 insertions(+), 11 deletions(-)
+
+diff --git a/config.def.h b/config.def.h
+index 1edb647..c4c8b72 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -12,6 +12,7 @@ static const char *colors[SchemeLast][2] = {
+ 	[SchemeNorm] = { "#bbbbbb", "#222222" },
+ 	[SchemeSel] = { "#eeeeee", "#005577" },
+ 	[SchemeOut] = { "#000000", "#00ffff" },
++	[SchemePrompt] = { "#444444", "#222222" },
+ };
+ /* -l option; if nonzero, dmenu uses vertical list with given number of lines */
+ static unsigned int lines      = 0;
+diff --git a/dmenu.c b/dmenu.c
+index fd49549..1b60216 100644
+--- a/dmenu.c
++++ b/dmenu.c
+@@ -25,7 +25,7 @@
+ #define TEXTW(X)              (drw_fontset_getwidth(drw, (X)) + lrpad)
+ 
+ /* enums */
+-enum { SchemeNorm, SchemeSel, SchemeOut, SchemeLast }; /* color schemes */
++enum { SchemeNorm, SchemeSel, SchemeOut, SchemePrompt, SchemeLast }; /* color schemes */
+ 
+ struct item {
+ 	char *text;
+@@ -152,21 +152,25 @@ drawmenu(void)
+ 	drw_setscheme(drw, scheme[SchemeNorm]);
+ 	drw_rect(drw, 0, 0, mw, mh, 1, 1);
+ 
+-	if (prompt && *prompt) {
+-		drw_setscheme(drw, scheme[SchemeSel]);
+-		x = drw_text(drw, x, 0, promptw, bh, lrpad / 2, prompt, 0);
+-	}
+-	/* draw input field */
+ 	w = (lines > 0 || !matches) ? mw - x : inputw;
+-	drw_setscheme(drw, scheme[SchemeNorm]);
+-	drw_text(drw, x, 0, w, bh, lrpad / 2, text, 0);
+ 
+-	curpos = TEXTW(text) - TEXTW(&text[cursor]);
+-	if ((curpos += lrpad / 2 - 1) < w) {
++	if (text[0] == '\0' && prompt && *prompt) {
++		/* Use SchemePrompt instead of SchemePlaceholder */
++		drw_setscheme(drw, scheme[SchemePrompt]);
++		/* If vertical list: use full width (w), else just promptw */
++		drw_text(drw, x, 0, (lines > 0 ? w : promptw), bh, lrpad / 2, prompt, 0);
++	} else {
+ 		drw_setscheme(drw, scheme[SchemeNorm]);
+-		drw_rect(drw, x + curpos, 2, 2, bh - 4, 1, 0);
++		drw_text(drw, x, 0, w, bh, lrpad / 2, text, 0);
+ 	}
+ 
++	if (text[0] != '\0') {
++		curpos = TEXTW(text) - TEXTW(&text[cursor]);
++		if ((curpos += lrpad / 2 - 1) < w) {
++			drw_setscheme(drw, scheme[SchemeNorm]);
++			drw_rect(drw, x + curpos, 1, 2, bh - 4, 1, 0);
++		}
++	}
+ 	if (lines > 0) {
+ 		/* draw vertical list */
+ 		for (item = curr; item != next; item = item->right)
+-- 
+2.50.1
+
