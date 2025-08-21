@@ -1,13 +1,13 @@
-From 531396985f3c400ed7a68810fb5f3c6402593123 Mon Sep 17 00:00:00 2001
+From 5a2f518818431f74f291facf2c5503735b85e5a9 Mon Sep 17 00:00:00 2001
 From: Daan Blom <contact@daanblom.com>
-Date: Thu, 21 Aug 2025 10:47:22 +0200
+Date: Thu, 21 Aug 2025 12:13:03 +0200
 Subject: [PATCH] Show prompt as placeholder inside input field instead of
  before it
 
 ---
  config.def.h |  1 +
- dmenu.c      | 26 +++++++++++++++-----------
- 2 files changed, 16 insertions(+), 11 deletions(-)
+ dmenu.c      | 25 ++++++++++++++-----------
+ 2 files changed, 15 insertions(+), 11 deletions(-)
 
 diff --git a/config.def.h b/config.def.h
 index 1edb647..c4c8b72 100644
@@ -22,7 +22,7 @@ index 1edb647..c4c8b72 100644
  /* -l option; if nonzero, dmenu uses vertical list with given number of lines */
  static unsigned int lines      = 0;
 diff --git a/dmenu.c b/dmenu.c
-index fd49549..1b60216 100644
+index fd49549..a58a28b 100644
 --- a/dmenu.c
 +++ b/dmenu.c
 @@ -25,7 +25,7 @@
@@ -34,7 +34,7 @@ index fd49549..1b60216 100644
  
  struct item {
  	char *text;
-@@ -152,21 +152,25 @@ drawmenu(void)
+@@ -152,21 +152,24 @@ drawmenu(void)
  	drw_setscheme(drw, scheme[SchemeNorm]);
  	drw_rect(drw, 0, 0, mw, mh, 1, 1);
  
@@ -51,6 +51,7 @@ index fd49549..1b60216 100644
 -	if ((curpos += lrpad / 2 - 1) < w) {
 +	if (text[0] == '\0' && prompt && *prompt) {
 +		drw_setscheme(drw, scheme[SchemePrompt]);
++		/* If vertical list: use full width (w), else just promptw */
 +		drw_text(drw, x, 0, (lines > 0 ? w : promptw), bh, lrpad / 2, prompt, 0);
 +	} else {
  		drw_setscheme(drw, scheme[SchemeNorm]);
