@@ -38,7 +38,7 @@ sudo make clean install
 
 ## Usage
 
-No changes in usage. Run dmenu as usual:
+No changes in usage. Run dmenu as usual with `-p` to set the prompt text.
 
 ## Notes
 
