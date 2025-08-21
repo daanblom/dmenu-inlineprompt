@@ -27,7 +27,7 @@ git clone https://github.com/daanblom/dmenu-inlineprompt.git
 3. Apply the patch (from your dmenu directory):
 
 ```bash
-patch -p 1 < /path/to/inlinePompt.patch
+patch -p 1 < /path/to/patch.diff
 ```
 
 4. Compile and install dmenu:
